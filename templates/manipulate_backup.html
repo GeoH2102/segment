@@ -1,0 +1,127 @@
+{% extends "page_frame.html" %}
+{% block content %}
+    <script type="text/javascript">
+        var d = {{ variables|safe }};
+        console.log(d);
+        function update_manips(){
+            var selector = document.getElementById("select-variable");
+            var current_val = selector.value;
+            console.log(current_val);
+            var current_type = d[current_val];
+            console.log(current_type);
+            if (current_type == "num") {
+                document.getElementById("div-manip-selector-num").style.display = "block";
+                document.getElementById("div-manip-selector-cat").style.display = "none";
+                document.getElementById("div-manip-selector-str").style.display = "none";
+                document.getElementById("div-manip-selector-dt").style.display = "none";
+                document.getElementById("div-manip-selector-num").style.position = "static";
+                document.getElementById("div-manip-selector-cat").style.position = "absolute";
+                document.getElementById("div-manip-selector-str").style.position = "absolute";
+                document.getElementById("div-manip-selector-dt").style.position = "absolute";
+            } else if (current_type == "cat") {
+                document.getElementById("div-manip-selector-num").style.display = "none";
+                document.getElementById("div-manip-selector-cat").style.display = "block";
+                document.getElementById("div-manip-selector-str").style.display = "none";
+                document.getElementById("div-manip-selector-dt").style.display = "none";
+                document.getElementById("div-manip-selector-num").style.position = "absolute";
+                document.getElementById("div-manip-selector-cat").style.position = "static";
+                document.getElementById("div-manip-selector-str").style.position = "absolute";
+                document.getElementById("div-manip-selector-dt").style.position = "absolute";
+            } else if (current_type == "str") {
+                document.getElementById("div-manip-selector-num").style.display = "none";
+                document.getElementById("div-manip-selector-cat").style.display = "none";
+                document.getElementById("div-manip-selector-str").style.display = "block";
+                document.getElementById("div-manip-selector-dt").style.display = "none";
+                document.getElementById("div-manip-selector-num").style.position = "absolute";
+                document.getElementById("div-manip-selector-cat").style.position = "absolute";
+                document.getElementById("div-manip-selector-str").style.position = "static";
+                document.getElementById("div-manip-selector-dt").style.position = "absolute";
+            } else if (current_type == "dt") {
+                document.getElementById("div-manip-selector-num").style.display = "none";
+                document.getElementById("div-manip-selector-cat").style.display = "none";
+                document.getElementById("div-manip-selector-str").style.display = "none";
+                document.getElementById("div-manip-selector-dt").style.display = "block";
+                document.getElementById("div-manip-selector-num").style.position = "absolute";
+                document.getElementById("div-manip-selector-cat").style.position = "absolute";
+                document.getElementById("div-manip-selector-str").style.position = "absolute";
+                document.getElementById("div-manip-selector-dt").style.position = "static";
+            }
+            document.getElementById("div-manip-options-outer").innerHTML = "";
+        }
+        function update_options(){
+            var available_manips = {{ manipulations|safe }}
+            var var_selector = document.getElementById("select-variable");
+            var current_var = var_selector.value;
+            var current_type = d[current_var];
+            if (current_type == "num") {
+                var manip_selector = document.getElementById("select-manip-num")
+                var manip = manip_selector.value;
+                console.log('abc ' + manip);
+            } else if (current_type == "cat") {
+                var manip_selector = document.getElementById("select-manip-cat")
+                var manip = manip_selector.value;
+            } else if (current_type == "str") {
+                var manip_selector = document.getElementById("select-manip-str")
+                var manip = manip_selector.value;
+            } else if (current_type == "dt") {
+                var manip_selector = document.getElementById("select-manip-dt")
+                var manip = manip_selector.value;
+            };
+            console.log("****");
+            console.log(available_manips[current_type]);
+            console.log(manip);
+            var html_code = available_manips[current_type][manip];
+            console.log(html_code);
+            document.getElementById("div-manip-options-outer").innerHTML = html_code;
+        }
+    </script>
+    <style>
+        body {
+            box-sizing: border-box;
+        }
+        .column {
+            float: left;
+            width: 33.33%;
+        }
+        .row:after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+    </style>
+    <div class="row">
+        <form name="manip" method="POST">
+            <div class="column" id="div-variable-selector">
+                <select id="select-variable" name="select-variable" onchange="update_manips()">
+                    <option disabled selected value>Select an Option</option>
+                    {% for variable, type in variables.items() %}
+                        <option value={{ variable }}>{{ variable }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="column" id="div-manip-selector-outer">
+                <div style="display: none;position: absolute;" id="div-manip-selector-num">
+                    <select id="select-manip-num" onchange="update_options()">
+                        <option disabled selected value>Select an Option</option>
+                        {% for manip in manipulations["num"].keys() %}
+                            <option value={{ manip }}>{{ manip }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div style="display: none;position: absolute;" id="div-manip-selector-cat">
+                    selectcat
+                </div>
+                <div style="display: none;position: absolute;" id="div-manip-selector-str">
+                    selectstr
+                </div>
+                <div style="display: none;position: absolute;" id="div-manip-selector-dt">
+                    selectdt
+                </div>
+            </div>
+            <div class="column" id="div-manip-options-outer">
+
+            </div>
+        </form>
+    </div>
+    {{ html_table|safe }}
+{% endblock %}

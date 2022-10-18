@@ -1,0 +1,100 @@
+{% extends "page_frame.html" %}
+{% block content %}
+    <script type="text/javascript">
+        var manips = {{ manipulations|safe }};
+        var fields = {{ variables|safe }};
+        console.log('manips:' + manips);
+        console.log('fields:' + fields);
+        function update_manips(){
+            var current_var = document.getElementById("select-variable").value;
+            console.log(current_var);
+            
+            var this_manips = manips[current_var];
+            console.log(this_manips);
+            
+            var manip_title = document.getElementById("manipulation_title");
+            var manip_body = document.getElementById("manipulation_body");
+            manip_title.hidden = false;
+            manip_body.hidden = false;
+
+            var manip_selector = document.getElementById("select-manip");
+            manip_selector.hidden = false;
+            var i, L = manip_selector.options.length - 1;
+            for(i = L; i >= 0; i--) {
+                manip_selector.remove(i);
+            }
+            var placeholder = document.createElement('option');
+            placeholder.value = 'Select an option';
+            placeholder.disabled = true;
+            placeholder.innerHTML = 'Select an option';
+            manip_selector.append(placeholder);
+            
+            for (var key in this_manips) {
+                var opt = document.createElement('option');
+                opt.value = key;
+                opt.innerHTML = key;
+                manip_selector.appendChild(opt);
+            }
+
+            document.getElementById('div-manip-options-outer').innerHTML = '';
+            manip_selector.value = 'Select an option';
+        }
+
+        function update_options(){
+            var current_var = document.getElementById("select-variable").value;
+            var current_manip = document.getElementById("select-manip").value;
+            var html_code = manips[current_var][current_manip];
+            document.getElementById("div-manip-options-outer").innerHTML = `
+            <h3>Run</h3>
+            <p>Finally, fine-tune the manipulation options and press the button to calculate</p>
+            ` + html_code;
+        }
+    </script>
+    <style>
+        body {
+            box-sizing: border-box;
+        }
+        .column {
+            float: left;
+            width: 33.33%;
+        }
+        .row:after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+    </style>
+    <form name="manip" method="POST">
+        {{ form.hidden_tag() }}
+        <div class="container-fluid p-1 m-1">
+            <div class="container p-1 m-1" id="div-variable-selector">
+                <h3>Variable Selection</h3>
+                <p>Please select a variable to manipulate</p>
+                <select id="select-variable" name="select-variable" onchange="update_manips()">
+                    <option disabled selected value>Select a Variable</option>
+                    {% for variable, type in variables.items() %}
+                        <option value={{ variable }}>{{ variable }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="container p-1 m-1" id="div-manip-selector">
+                <h3 hidden id="manipulation_title">Manipulation</h3>
+                <p hidden id="manipulation_body">Next, select a manipulation from the list below</p>
+                <select id="select-manip" onchange="update_options()" hidden>
+                    <option disabled selected value>Select a Manipulation</option>
+                </select>
+            </div>
+            <div class="container p-1 m-1" id="div-manip-options-outer">
+            </div>
+            <div class="container p-1 m-1">
+                <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTable" aria-expanded="false" aria-controls="collapseTable">
+                    Show Data Table
+                </button>
+                <button class="btn btn-primary" type="submit" name="btn_manipulate_to_visualise" value="Proceed">Proceed</button>
+                <div class="collapse container-fluid overflow-auto pb-2 pt-2" id="collapseTable">
+                    {{ html_table|safe }}
+                </div>
+            </div>
+        </div>
+    </form>
+{% endblock %}

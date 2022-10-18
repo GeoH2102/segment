@@ -1,0 +1,7 @@
+data/
+exclude/
+.ipynb_checkpoints/
+__pycache__/
+Segment/__pycache__/
+Segment/.ipynb_checkpoints/
+models/*

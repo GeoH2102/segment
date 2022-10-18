@@ -1,0 +1,91 @@
+{% extends "page_frame.html" %}
+{% block content %}
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    <script>
+
+        $(document).ready(function (){
+            var table = $('#pandas_data_table').DataTable({
+                'select': 'api',
+                'paging': false,
+                'ordering': false,
+                'searching': false
+            });
+
+            $('#pandas_data_table').on('click', 'tbody td', function (){
+                if (table.column(this, { selected: true }).length){
+                    table.column(this).deselect();
+                } else {
+                    table.column(this).select();
+                }
+            });
+
+            $('#btn_run_clustering').on('click', null, function(){
+
+                var sel = table.columns( { selected: true } ).data();
+                var arr = [];
+                var keymatch = new RegExp(/^\d+$/);
+                var valmatch = new RegExp(/^<div id="chart-(.*?)"/);
+                for (const [key, value] of Object.entries(sel)) {
+                    if (keymatch.test(key)) {
+                        arr.push(valmatch.exec(value[0])[1])
+                    }
+                }
+                console.log(arr); 
+                
+                $.ajax({
+                    type: "POST",
+                    url: "/cluster-data",
+                    data: JSON.stringify(arr),
+                    beforeSend: function(){
+                        $("#content").hide();
+                        $("#loading").show();        
+                    },
+                    success: function(){
+                        window.location.href = "{{ url_for('cluster') }}"
+                    },
+                    contentType: "application/json; charset=utf-8",
+                    traditional: true,
+                    timeout: 120000,
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    }
+                });
+            });
+        });
+
+    </script>
+
+    <style>
+        div#loading {
+            width: 100px;
+            height: 100px;
+            display: none;
+            background: url(/static/loading.svg) no-repeat;
+            cursor: wait;
+        }
+    </style>
+    <div class="container-fluid align-items-center" id="loading"></div>
+    <div class="container-fluid align-items-center" id="content">
+        <form name="cluster" method="POST">
+            {{ form.hidden_tag() }}
+            <p> 
+                {{ form.cluster_alg.label }} <br>
+                {{ form.cluster_alg }} 
+            </p>
+            <p> 
+                {{ form.use_tsne.label }}
+                {{ form.use_tsne }} 
+            </p>
+            {{ html_table | safe }}
+
+            <button type="button" name="btn_run_clustering" class="btn btn-primary" id="btn_run_clustering" value="Segment!">Segment!</button>
+            {% if clustered %}
+                <button type="submit" class="btn btn-primary" name="btn_cluster_to_clusterviz" value="Proceed">Proceed</button>
+            {% else %}
+                <br>Cluster model not yet trained.
+            {% endif %}
+        </form>
+    </div>
+
+{% endblock %}

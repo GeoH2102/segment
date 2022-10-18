@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <!-- Stylesheets + Fonts -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=PT+Sans&display=swap" rel="stylesheet"> 
+        <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+        <link href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css" rel="stylesheet">
+        <link href="https://cdn.datatables.net/select/1.4.0/css/select.dataTables.min.css" rel="stylesheet">
+        <!-- Scripts -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js"></script>
+        <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
+        <script src="https://kit.fontawesome.com/707eafc1e1.js" crossorigin="anonymous"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+        <script src="https://cdn.datatables.net/select/1.4.0/js/dataTables.select.min.js"></script>
+
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <title>Segment</title>
+    </head>
+    <body>
+        <div class="container-fluid min-vh-100 d-flex flex-column">
+            <div class="row flex-grow-1">
+                <div class="col-2 bg-light flex-grow-1 border-end border-2" style="border-color:#dedede !important;font-family:PT Sans !important">
+                    <div class="p-4"><h2><i class="fa-solid fa-chart-pie"></i> Segment</h2></div>
+                    <ul class="nav flex-column ps-2">
+                        <li class="nav-item"><a href="/" class="nav-link {% if url_for(request.endpoint) == '/' %} disabled {% endif %}"><i class="fa-solid fa-table"></i> Import</a></li>
+                        <li class="nav-item"><a href="/change-dtypes" class="nav-link {% if url_for(request.endpoint) == '/change-dtypes' %} disabled {% endif %}"><i class="fa-solid fa-pen-to-square"></i> Edit</a></li>
+                        <li class="nav-item"><a href="/manipulate" class="nav-link {% if url_for(request.endpoint) == '/manipulate' %} disabled {% endif %}"><i class="fa-solid fa-wrench"></i> Manipulate</a></li>
+                        <li class="nav-item"><a href="/visualise" class="nav-link {% if url_for(request.endpoint) == '/visualise' %} disabled {% endif %}"><i class="fa-solid fa-chart-simple"></i> Visualise</a></li>
+                        <li class="nav-item"><a href="/cluster" class="nav-link {% if url_for(request.endpoint) == '/cluster' %} disabled {% endif %}"><i class="fa-solid fa-circle-nodes"></i> Cluster</a></li>
+                        <li class="nav-item"><a href="/clusterviz" class="nav-link {% if url_for(request.endpoint) == '/clusterviz' %} disabled {% endif %}"><i class="fa-solid fa-magnifying-glass"></i> Explore</a></li>
+                    </ul>
+                    <p></p>
+                    <p>Current DF Size:</p>
+                        <p style="margin-left:5%">{{ dfshape[0] }} rows<br>
+                        {{ dfshape[1] }} cols</p>
+                </div>
+                <div class="col-10 p-5">
+                    {% block content %}
+                    {% endblock %}
+                </div>
+            </div>        
+        </div>
+    </body>
+</html>

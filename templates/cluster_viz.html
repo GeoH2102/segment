@@ -1,0 +1,125 @@
+{% extends "page_frame.html" %}
+{% block content %}
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        function create_graph() {
+            console.log('test');
+            var var1 = document.getElementById("var1").value;
+            var var2 = document.getElementById("var2").value;
+            var chart_type = document.querySelector("input[name='chart_type']:checked").value;
+            console.log(var1, var2, chart_type);
+            $.getJSON({
+                url: "/callback",
+                data: {
+                    'var1': var1,
+                    'var2': var2,
+                    'graph_type': chart_type,
+                    'cluster': true
+                },
+                success: function(result) {
+                    Plotly.newPlot('chart', result, {});
+                }
+            });
+        }
+    </script>
+    <script>
+        var dtypes = {{ dtypes | safe }};
+        const allEqual = arr => arr.every(val => val === arr[0]);
+        function check_list_equality(arrOne, arrTwo) {
+            if (allEqual(arrOne)) {
+                arrOne = [arrOne[0]];
+            };
+            if (allEqual(arrTwo)) {
+                arrTwo = [arrTwo[0]];
+            }
+            let result =
+                arrOne.length == arrTwo.length &&
+                arrOne.every(function (element) {
+                    return arrTwo.includes(element)
+                });
+            return result;
+        }
+        function create_graph_options() {
+            var var1 = document.getElementById("var1").value;
+            var var2 = document.getElementById("var2").value;
+            var dtype1 = dtypes[var1];
+            var dtype2 = dtypes[var2];
+            
+            var options = '';
+            var dtypeArr = [dtype1,dtype2];
+
+            if        (check_list_equality(dtypeArr, ['num','num'])) {
+                options = ['scatter']
+            } else if (check_list_equality(dtypeArr, ['num','cat'])) {
+                options = ['boxplot','histogram']
+            } else if (check_list_equality(dtypeArr, ['num','dt'])) {
+                options = ['timeseries-num']
+            } else if (check_list_equality(dtypeArr, ['cat','cat'])) {
+                options = ['heatmap']
+            } else if (check_list_equality(dtypeArr, ['cat','dt'])) {
+                options = ['timeseries-cat']
+            }
+            // <input type="radio" id="chart1" name="chart_type" value="chart1" checked><label for="chart1">chart1</label><br>
+            // <input type="radio" id="chart2" name="chart_type" value="chart2"><label for="chart2">chart2</label><br>
+            // <input type="radio" id="chart3" name="chart_type" value="chart3"><label for="chart3">chart3</label>
+            
+            var options_div = document.getElementById('chart-options');
+            var options_html = "";
+            for (let i = 0; i < options.length; i++) {
+                options_html += '<input type="radio" id="'+options[i]+'" name="chart_type" value="'+options[i]+'">';
+                options_html += '<label for="'+options[i]+'">'+options[i]+'</label><br>';
+            }
+
+            options_div.innerHTML = options_html;
+
+            console.log(dtypeArr, options);
+            
+        }
+    </script>
+    
+    <style>
+        body {
+            box-sizing: border-box;
+        }
+        .column {
+            float: left;
+            width: 50%;
+        }
+        .row:after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+    </style>
+
+    <form name="viz" method="POST">
+        <div class="row">
+            <div class="column">
+                <select id="var1" name="var1" onchange="create_graph_options()">
+                    <option selected disabled>Select a Variable</option>
+                    {% for variable, type in dtypes.items() %}
+                        <option>{{ variable }}</option>
+                    {% endfor %}
+                </select><br>
+                <select id="var2" name="var2" onchange="create_graph_options()">
+                    <option selected disabled>Select a Variable</option>
+                    {% for variable, type in dtypes.items() %}
+                        <option>{{ variable }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="column" id="chart-options"></div>
+        </div>
+        <div class="row">
+            <button type="button" name="btn_update_graph" value="Update" onclick="create_graph()">Update</button>
+            <button type="submit" name="btn_viz_to_cluster" value="Proceed">Proceed</button>
+        </div>
+    </form>
+
+    <div id="chart" class="chart"></div>
+   
+    
+
+{% endblock %}
+
