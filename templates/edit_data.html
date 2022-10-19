@@ -11,12 +11,13 @@
         });
     </script>
 
-    <form name="edit_data" method="POST" enctype="multipart/form-data" >
+    <form name="edit_data" method="POST" enctype="multipart/form-data" class="p-0 m-0">
         {{ form.hidden_tag() }}
-        <div class="overflow-auto pb-2">
-
+        <div class="container-fluid overflow-auto p-0 pb-2 vh-80">
             {{ form.hidden_tag() }}
-            {{ html_table | safe }}
+            <div class="container-fluid">
+                {{ html_table | safe }}
+            </div>
         </div>
         <div class="pt-3">
             <button class="btn btn-primary" type="submit" name="submit" value="btn_change_dtypes">Update</button>

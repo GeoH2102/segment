@@ -104,6 +104,17 @@ def change_dtypes():
 @app.route("/manipulate", methods=["GET","POST"])
 def manipulate():
     
+    Segment.df = pd.read_csv('/home/george/Development/Personal/Python/Segment/data/processed.csv')
+    Segment.edit_to_cat('Cat')
+    Segment.edit_to_datetime('FirstOrder')
+    Segment.edit_to_str('CustomerID')
+    
+    Segment.manip_cat_bins('Cat',{'A':'A','B':'B','C':'C','D':'E'})
+    Segment.manip_dt_datediff('FirstOrder','2010-12-01')
+    Segment.manip_num_normalize('Num_Orders')
+    Segment.manip_num_trim('Num_Orders',15,0)
+    Segment.manip_str_embeddings('Description')
+    
     form = ManipulateForm()
     
     fields = Segment.get_dtypes()
@@ -217,21 +228,22 @@ def cb():
 @app.route("/cluster", methods=["GET","POST"])
 def cluster():
 
+    Segment.df = pd.read_csv('/home/george/Development/Personal/Python/Segment/data/processed.csv')
+    Segment.edit_to_cat('Cat')
+    Segment.edit_to_datetime('FirstOrder')
+    Segment.edit_to_str('CustomerID')
+    
+    Segment.manip_cat_bins('Cat',{'A':'A','B':'B','C':'C','D':'E'})
+    Segment.manip_dt_datediff('FirstOrder','2010-12-01')
+    Segment.manip_num_normalize('Num_Orders')
+    Segment.manip_num_trim('Num_Orders',15,0)
+    Segment.manip_str_embeddings('Description')
+
     form = ClusterForm()
 
     if form.validate_on_submit():
-        if request.form['submit'] == 'btn_cluster_to_clusterviz':
+        if 'btn_cluster_to_clusterviz' in request.form.keys():
             return redirect('/clusterviz')
-
-    # if 'btn_run_clustering' in request.form.keys():
-    #     print('*****************')
-    #     cols = request.form.keys()
-    #     cols = [re.sub('chk_','',i) for i in cols if i.startswith('chk_')]
-    #     print(cols)
-    #     Segment.cluster(cols, 3)
-
-    # if 'btn_cluster_to_clusterviz' in request.form.keys():
-    #     return redirect('/clusterviz')
 
     return render_template(
         'cluster.html',

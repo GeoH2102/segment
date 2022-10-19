@@ -49,6 +49,24 @@
             <p>Finally, fine-tune the manipulation options and press the button to calculate</p>
             ` + html_code;
         }
+
+        function adjust_element_sizes() {
+            var selector_row = document.getElementById('selector-row');
+            var table_row = document.getElementById('table-row');
+            var sHeight = selector_row.offsetHeight;
+            var vHeight = window.innerHeight;
+            
+            var box = selector_row.getBoundingClientRect();
+            console.log(box);
+
+            table_row.style.height = vHeight - box.bottom + 'px';
+
+        }
+
+        $(document).ready(function() {
+            console.log(adjust_element_sizes());
+        })
+
     </script>
     <style>
         body {
@@ -66,32 +84,36 @@
     </style>
     <form name="manip" method="POST">
         {{ form.hidden_tag() }}
-        <div class="container-fluid p-1 m-1">
-            <div class="container p-1 m-1" id="div-variable-selector">
-                <h3>Variable Selection</h3>
-                <p>Please select a variable to manipulate</p>
-                <select id="select-variable" name="select-variable" onchange="update_manips()">
-                    <option disabled selected value>Select a Variable</option>
-                    {% for variable, type in variables.items() %}
-                        <option value={{ variable }}>{{ variable }}</option>
-                    {% endfor %}
-                </select>
+        <div class="container-fluid p-1 m-1 d-flex flex-column">
+            <div class="row vh-20" id="selector-row">
+                <div class="container p-1 m-1" id="div-variable-selector">
+                    <h3>Variable Selection</h3>
+                    <p>Please select a variable to manipulate</p>
+                    <select id="select-variable" name="select-variable" onchange="update_manips()">
+                        <option disabled selected value>Select a Variable</option>
+                        {% for variable, type in variables.items() %}
+                            <option value={{ variable }}>{{ variable }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="container p-1 m-1" id="div-manip-selector">
+                    <h3 hidden id="manipulation_title">Manipulation</h3>
+                    <p hidden id="manipulation_body">Next, select a manipulation from the list below</p>
+                    <select id="select-manip" onchange="update_options()" hidden>
+                        <option disabled selected value>Select a Manipulation</option>
+                    </select>
+                </div>
+                <div class="container p-1 m-1" id="div-manip-options-outer">
+                </div>
+                <div class="container p-1 m-1">
+                    <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTable" aria-expanded="false" aria-controls="collapseTable">
+                        Show Data Table
+                    </button>
+                    <button class="btn btn-primary" type="submit" name="btn_manipulate_to_visualise" value="Proceed">Proceed</button>
+                </div>
             </div>
-            <div class="container p-1 m-1" id="div-manip-selector">
-                <h3 hidden id="manipulation_title">Manipulation</h3>
-                <p hidden id="manipulation_body">Next, select a manipulation from the list below</p>
-                <select id="select-manip" onchange="update_options()" hidden>
-                    <option disabled selected value>Select a Manipulation</option>
-                </select>
-            </div>
-            <div class="container p-1 m-1" id="div-manip-options-outer">
-            </div>
-            <div class="container p-1 m-1">
-                <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTable" aria-expanded="false" aria-controls="collapseTable">
-                    Show Data Table
-                </button>
-                <button class="btn btn-primary" type="submit" name="btn_manipulate_to_visualise" value="Proceed">Proceed</button>
-                <div class="collapse container-fluid overflow-auto pb-2 pt-2" id="collapseTable">
+            <div class="row vh-80 overflow-auto" id="table-row">
+                <div class="container-fluid collapse pb-2 pt-2" id="collapseTable">
                     {{ html_table|safe }}
                 </div>
             </div>

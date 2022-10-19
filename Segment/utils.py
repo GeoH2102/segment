@@ -7,7 +7,11 @@ import pandas as pd
 from plotly import graph_objects as go, utils as pltutils, express as px
 
 def create_html_output(df, div_size, form=None, render_scrolls=False):
-    html_output = df.sample(20).to_html(justify='left', col_space=50, index=False, classes="table", table_id="pandas_data_table")
+    str_cols = df.select_dtypes('object').columns
+    formatter_dict = {}
+    for col in str_cols:
+        formatter_dict[col] = lambda x: f'{str(x):10.10}…' if len(str(x)) > 10 else f'{str(x)}'
+    html_output = df.sample(20).to_html(justify='left', col_space=50, index=False, classes="table", table_id="pandas_data_table", formatters=formatter_dict)
     select_code = []
     if form:
         for col in df.columns:
@@ -211,7 +215,7 @@ def generate_graph(data, df):
             values='n',
             aggfunc='count'
         )
-        fig = px.imshow(aggdf, text_auto=True, aspect='auto', color=color)
+        fig = px.imshow(aggdf, text_auto=True, aspect='auto', color_continuous_scale='RdBu_r')
         graphJSON = json.dumps(fig, cls=pltutils.PlotlyJSONEncoder)
 
     return graphJSON

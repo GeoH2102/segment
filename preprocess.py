@@ -1,4 +1,6 @@
+import random
 import re
+import requests
 
 import numpy as np
 import pandas as pd
@@ -213,5 +215,20 @@ avgfreq = freqdf.groupby('CustomerID')['Avg_Freq'].agg('mean')
 
 finaldf = finaldf.merge(avgfreq.to_frame(), left_on='CustomerID', right_index=True, how='left')
 finaldf['Avg_Freq'] = finaldf['Avg_Freq'].fillna(finaldf['Avg_Freq'].max())
+
+# Random category
+finaldf['Cat'] = random.choices(['A','B','C','D'],k=len(finaldf))
+
+# Random text
+word_site = "https://www.mit.edu/~ecprice/wordlist.10000"
+response = requests.get(word_site)
+WORDS = response.content.splitlines()
+WORDS = [i.decode() for i in WORDS]
+
+finaldf['Description'] = (finaldf.apply(
+    lambda _: ' '.join(random.choices(WORDS, k=15)),
+    axis=1
+))
+
 
 finaldf.to_csv('/home/george/Development/Personal/Python/Segment/data/processed.csv', index=False)
