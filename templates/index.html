@@ -1,19 +1,33 @@
 {% extends "page_frame.html" %}
 {% block content %}
-    <form method="POST" enctype="multipart/form-data" name="upload">
-        {{ form.hidden_tag() }}
-        <div class="form-group pb-2">
-            <label for="file" class="form-label">Select a file</label>
-            {{ form.file(class_="form-control") }}
-        </div>
-        <div class="form-group pb-2">
-            <label for="enc" class="form-label">Select file encoding</label>
-            {{ form.enc(class_="form-control") }}
-        </div>
-        <input type="submit" class="btn btn-primary" value="Upload">
-    </form>
-    {% if shape is defined %}
-        Shape is: {{ shape }}
-    {% else %}
-    {% endif %}
+    <div class="container-fluid p-5">
+        <h2>
+            Import File
+        </h2>
+        <p>
+            Select a file to upload. The file should be pre-aggregated to the level that you wish
+            to segment at. 
+        </p>
+        <p>
+            Currently, only CSV is supported, but there are plans to offer alternative 
+            filetypes (and database connections).
+        </p>
+        <br><br>
+        <form method="POST" enctype="multipart/form-data" name="upload">
+            {{ form.hidden_tag() }}
+            <div class="form-group pb-2">
+                <label for="file" class="form-label">Select a file</label>
+                {{ form.file(class_="form-control") }}
+            </div>
+            <div class="form-group pb-2">
+                <label for="enc" class="form-label">Select file encoding</label>
+                {{ form.enc(class_="form-control") }}
+            </div>
+            <input type="submit" class="btn btn-primary" value="Upload">
+        </form>
+        {% if shape is defined %}
+            Shape is: {{ shape }}
+        {% else %}
+        {% endif %}
+    </div>
 {% endblock %}

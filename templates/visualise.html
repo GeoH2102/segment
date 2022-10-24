@@ -79,9 +79,22 @@
     
     <form name="viz" method="POST">
         {{ form.hidden_tag() }}
-            <div class="row">
+        <div class="container-fluid vh-100 p-5">
+            <div class="row pb-0">
                 <div class="col">
-                    <div class="container p-2">
+                    <h2>
+                        Visualise
+                    </h2>
+                    <p>
+                        Select two variables from the data table below, then select one of the
+                        valid visualisation types from the list on the right. Finally, click 
+                        the "Update" button to view the visualisation.
+                    </p>
+                </div>
+            </div>
+            <div class="row pt-3 pb-3">
+                <div class="col-6">
+                    <div class="container py-2 px-0">
                         <select id="var1" name="var1" onchange="create_graph_options()">
                             <option selected disabled>Select a Variable</option>
                             {% for variable, type in dtypes.items() %}
@@ -89,7 +102,7 @@
                             {% endfor %}
                         </select>
                     </div>
-                    <div class="container p-2">
+                    <div class="container py-2 px-0">
                         <select id="var2" name="var2" onchange="create_graph_options()">
                             <option selected disabled>Select a Variable</option>
                             {% for variable, type in dtypes.items() %}
@@ -102,16 +115,15 @@
                 <div class="col-6" id="chart-options">
                 </div>
             </div>
-
-            <div class="container-fluid p-2">
-                <button type="button" class="btn btn-secondary" name="btn_update_graph" value="Update" onclick="create_graph()">Update</button>
-                <button type="submit" class="btn btn-primary" name="btn_viz_to_cluster" value="Proceed">Proceed</button>
+            <div class="row">
+                <div class="col-12">
+                    <button type="button" class="btn btn-secondary" name="btn_update_graph" value="Update" onclick="create_graph()">Update</button>
+                    <button type="submit" class="btn btn-primary" name="btn_viz_to_cluster" value="Proceed">Proceed</button>
+                </div>
             </div>
+            <div id="chart" class="chart"></div>
+        </div>
     </form>
-
-    <div id="chart" class="chart"></div>
-   
-    
 
 {% endblock %}
 

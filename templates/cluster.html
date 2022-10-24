@@ -21,25 +21,32 @@
             });
 
             $('#btn_run_clustering').on('click', null, function(){
-
-                var sel = table.columns( { selected: true } ).data();
+                var sel = table.columns( { selected: true } ).header();
                 var arr = [];
                 var keymatch = new RegExp(/^\d+$/);
-                var valmatch = new RegExp(/^<div id="chart-(.*?)"/);
                 for (const [key, value] of Object.entries(sel)) {
                     if (keymatch.test(key)) {
-                        arr.push(valmatch.exec(value[0])[1])
+                        arr.push(
+                            value.innerText
+                        )
                     }
                 }
-                console.log(arr); 
+                
+                if ( $('input[name=use_tsne]:checked').val() == 'Yes' ) {
+                    var tsne = true;
+                } else {
+                    var tsne = false;
+                }
+                
+                console.log(tsne);
                 
                 $.ajax({
                     type: "POST",
                     url: "/cluster-data",
-                    data: JSON.stringify(arr),
+                    data: JSON.stringify({'fields': arr, 'tsne': tsne}),
                     beforeSend: function(){
-                        $("#content").hide();
-                        $("#loading").show();        
+                        $("#loading").css("display","flex");
+                        $("#loading").css("visibility","visible");        
                     },
                     success: function(){
                         window.location.href = "{{ url_for('cluster') }}"
@@ -58,34 +65,62 @@
 
     <style>
         div#loading {
-            width: 100px;
-            height: 100px;
+            width: 100%;
             display: none;
-            background: url(/static/loading.svg) no-repeat;
+            background: url(/static/loading.svg);
+            background-repeat: no-repeat;
+            background-position: center;
+            background-color: rgba(255,255,255,0.75);
             cursor: wait;
+            min-height: 100vh;
+            z-index: 100;
         }
     </style>
-    <div class="container-fluid align-items-center" id="loading"></div>
-    <div class="container-fluid align-items-center" id="content">
-        <form name="cluster" method="POST">
+    <form name="cluster" class="position-relative" method="POST">
+        <div class="container-fluid align-items-center vertical-center position-absolute p-0 m-0" id="loading"></div>
+        <div class="container-fluid d-flex flex-column vh-100 p-5" id="content">
             {{ form.hidden_tag() }}
-            <p> 
-                {{ form.cluster_alg.label }} <br>
-                {{ form.cluster_alg }} 
-            </p>
-            <p> 
-                {{ form.use_tsne.label }}
-                {{ form.use_tsne }} 
-            </p>
-            {{ html_table | safe }}
+            <div class="row flex-fill">
+                <h2>
+                    Cluster
+                </h2>
+                <p>
+                    Select the cluster method from the first drop down, and decide whether to use
+                    TSNE to reduce dimensionality before clustering. Click on the columns of the 
+                    data table to include them in the cluster model!<br>
+                    Currently, K-Means is the only supported clustering method, but others are 
+                    planned to be added soon.
+                </p>
+            </div>
+            <div class="row flex-fill py-2 px-0">
+                <div class="col-12">
+                    <p> 
+                        {{ form.cluster_alg.label }} <br>
+                        {{ form.cluster_alg }} 
+                    </p>
+                    <p> 
+                        {{ form.use_tsne.label }}
+                        {{ form.use_tsne }} 
+                    </p>
+                </div>
+            </div>
+            <div class="row flex-fill overflow-auto py-2 px-0 mb-2">
+                <div class="col-12">
+                    {{ html_table | safe }}
+                </div>
+            </div>
 
-            <button type="button" name="btn_run_clustering" class="btn btn-primary" id="btn_run_clustering" value="Segment!">Segment!</button>
-            {% if clustered %}
-                <button type="submit" class="btn btn-primary" name="btn_cluster_to_clusterviz" value="Proceed">Proceed</button>
-            {% else %}
-                <br>Cluster model not yet trained.
-            {% endif %}
-        </form>
-    </div>
+            <div class="row flex-fill py-2 px-0">
+                <div class="col-12">
+                    <button type="button" name="btn_run_clustering" class="btn btn-primary" id="btn_run_clustering" value="Segment!">Segment!</button>
+                    {% if clustered %}
+                        <button type="submit" class="btn btn-primary" name="btn_cluster_to_clusterviz" value="Proceed">Proceed</button>
+                    {% else %}
+                        <br>Cluster model not yet trained.
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </form>
 
 {% endblock %}

@@ -3,8 +3,8 @@
     <script type="text/javascript">
         var manips = {{ manipulations|safe }};
         var fields = {{ variables|safe }};
-        console.log('manips:' + manips);
-        console.log('fields:' + fields);
+        console.log('manips:' + JSON.stringify(manips));
+        console.log('fields:' + JSON.stringify(fields));
         function update_manips(){
             var current_var = document.getElementById("select-variable").value;
             console.log(current_var);
@@ -49,45 +49,13 @@
             <p>Finally, fine-tune the manipulation options and press the button to calculate</p>
             ` + html_code;
         }
-
-        function adjust_element_sizes() {
-            var selector_row = document.getElementById('selector-row');
-            var table_row = document.getElementById('table-row');
-            var sHeight = selector_row.offsetHeight;
-            var vHeight = window.innerHeight;
-            
-            var box = selector_row.getBoundingClientRect();
-            console.log(box);
-
-            table_row.style.height = vHeight - box.bottom + 'px';
-
-        }
-
-        $(document).ready(function() {
-            console.log(adjust_element_sizes());
-        })
-
     </script>
-    <style>
-        body {
-            box-sizing: border-box;
-        }
-        .column {
-            float: left;
-            width: 33.33%;
-        }
-        .row:after {
-            content: "";
-            display: table;
-            clear: both;
-        }
-    </style>
     <form name="manip" method="POST">
         {{ form.hidden_tag() }}
-        <div class="container-fluid p-1 m-1 d-flex flex-column">
-            <div class="row vh-20" id="selector-row">
+        <div class="container-fluid p-0 d-flex flex-column vh-100">
+            <div class="box-1 flex-fill m-5" id="selector-row">
                 <div class="container p-1 m-1" id="div-variable-selector">
-                    <h3>Variable Selection</h3>
+                    <h2>Variable Manipulation</h2>
                     <p>Please select a variable to manipulate</p>
                     <select id="select-variable" name="select-variable" onchange="update_manips()">
                         <option disabled selected value>Select a Variable</option>
@@ -106,13 +74,13 @@
                 <div class="container p-1 m-1" id="div-manip-options-outer">
                 </div>
                 <div class="container p-1 m-1">
-                    <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTable" aria-expanded="false" aria-controls="collapseTable">
+                    <button class="btn btn-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTable" aria-expanded="false" aria-controls="collapseTable">
                         Show Data Table
                     </button>
                     <button class="btn btn-primary" type="submit" name="btn_manipulate_to_visualise" value="Proceed">Proceed</button>
                 </div>
             </div>
-            <div class="row vh-80 overflow-auto" id="table-row">
+            <div class="box-2 flex-fill overflow-auto mb-5 mx-5" id="table-row">
                 <div class="container-fluid collapse pb-2 pt-2" id="collapseTable">
                     {{ html_table|safe }}
                 </div>

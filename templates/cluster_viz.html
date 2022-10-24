@@ -92,30 +92,50 @@
             clear: both;
         }
     </style>
-
-    <form name="viz" method="POST">
-        <div class="row">
-            <div class="column">
-                <select id="var1" name="var1" onchange="create_graph_options()">
-                    <option selected disabled>Select a Variable</option>
-                    {% for variable, type in dtypes.items() %}
-                        <option>{{ variable }}</option>
-                    {% endfor %}
-                </select><br>
-                <select id="var2" name="var2" onchange="create_graph_options()">
-                    <option selected disabled>Select a Variable</option>
-                    {% for variable, type in dtypes.items() %}
-                        <option>{{ variable }}</option>
-                    {% endfor %}
-                </select>
+    <div class="container-fluid p-5">
+        <form name="viz" method="POST">
+            {{ form.hidden_tag() }}
+            <div class="row">
+                <div class="col">
+                    <h2>
+                        Cluster Visualisation
+                    </h2>
+                    <p>
+                        Select two variables from the data table below, then select one of the
+                        valid visualisation types from the list on the right. Finally, click 
+                        the "Update" button to view the visualisation. Created clusters are
+                        denoted by colour.
+                    </p>
+                </div>
             </div>
-            <div class="column" id="chart-options"></div>
-        </div>
-        <div class="row">
-            <button type="button" name="btn_update_graph" value="Update" onclick="create_graph()">Update</button>
-            <button type="submit" name="btn_viz_to_cluster" value="Proceed">Proceed</button>
-        </div>
-    </form>
+            <div class="row">
+                <div class="column">
+                    <p>
+                        <select id="var1" name="var1" onchange="create_graph_options()">
+                            <option selected disabled>Select a Variable</option>
+                            {% for variable, type in dtypes.items() %}
+                                <option>{{ variable }}</option>
+                            {% endfor %}
+                        </select>
+                    </p>
+                    <p>
+                        <select id="var2" name="var2" onchange="create_graph_options()">
+                            <option selected disabled>Select a Variable</option>
+                            {% for variable, type in dtypes.items() %}
+                                <option>{{ variable }}</option>
+                            {% endfor %}
+                        </select>
+                    </p>
+                </div>
+                <div class="column" id="chart-options"></div>
+            </div>
+            <div class="row">
+                <div class="column">
+                    <button type="button" class="btn btn-primary" name="btn_update_graph" value="Update" onclick="create_graph()">Update</button>
+                </div>
+            </div>
+        </form>
+    </div>
 
     <div id="chart" class="chart"></div>
    

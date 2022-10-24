@@ -6,6 +6,19 @@ import pandas as pd
 
 from plotly import graph_objects as go, utils as pltutils, express as px
 
+COLOR_MAP = [
+    "#6610f2",
+    "#565aa0",
+    "#4267ac",
+    "#1982c4",
+    "#36949d",
+    "#8ac926",
+    "#c5ca30",
+    "#ffca3a",
+    "#ff924c",
+    "#ff595e"
+]
+
 def create_html_output(df, div_size, form=None, render_scrolls=False):
     str_cols = df.select_dtypes('object').columns
     formatter_dict = {}
@@ -40,13 +53,15 @@ def create_html_output(df, div_size, form=None, render_scrolls=False):
         if pd.api.types.is_numeric_dtype(df[col]):
             # print('Number: Output box + whisker')
             newdf = df.copy()[col]
-            fig = px.box(newdf, y=col, width=div_size, height=div_size)
+            fig = px.box(newdf, y=col, width=div_size, height=div_size, color_discrete_sequence=COLOR_MAP)
             fig.update_layout(
                 autosize=False,
                 margin=margins,
                 showlegend=False,
                 yaxis={'visible': False, 'showticklabels': False},
-                xaxis={'visible': False, 'showticklabels': False}
+                xaxis={'visible': False, 'showticklabels': False},
+                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='rgba(0,0,0,0)'
             )
             graphJSON = f"""
                 <td>
@@ -64,13 +79,15 @@ def create_html_output(df, div_size, form=None, render_scrolls=False):
             cats = newdf[col].value_counts()
             newdf[col] = np.where(newdf[col].isin(cats[9:].index), 'Other', newdf[col])
             newdf = newdf[col].value_counts()
-            fig = px.bar(newdf, width=div_size, height=div_size)
+            fig = px.bar(newdf, width=div_size, height=div_size, color_discrete_sequence=COLOR_MAP)
             fig.update_layout(
                 autosize=False,
                 margin=margins,
                 showlegend=False,
                 yaxis={'visible': False, 'showticklabels': False},
-                xaxis={'visible': False, 'showticklabels': False}
+                xaxis={'visible': False, 'showticklabels': False},
+                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='rgba(0,0,0,0)'
             )
             graphJSON = f"""
                 <td>
@@ -85,13 +102,15 @@ def create_html_output(df, div_size, form=None, render_scrolls=False):
         elif pd.api.types.is_datetime64_any_dtype(df[col]):
             # print('Datetime: Output time series')
             newdf = df.copy()[col].dt.strftime('%Y-%V').value_counts().sort_index()
-            fig = px.line(newdf, height=div_size, width=div_size)
+            fig = px.line(newdf, height=div_size, width=div_size, color_discrete_sequence=COLOR_MAP)
             fig.update_layout(
                 autosize=False,
                 margin=margins,
                 showlegend=False,
                 yaxis={'visible': False, 'showticklabels': False},
-                xaxis={'visible': False, 'showticklabels': False}
+                xaxis={'visible': False, 'showticklabels': False},
+                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='rgba(0,0,0,0)'
             )
             graphJSON = f"""
                 <td>
@@ -126,11 +145,24 @@ def generate_graph(data, df):
 
     if cluster:
         color='cluster'
+        cluster_order={'cluster':df['cluster'].value_counts().sort_index().index.to_list()}
     else:
         color=None
+        cluster_order=None
 
     if graph_type == 'scatter':
-        fig = px.scatter(df, x=var1, y=var2, color=color)
+        fig = px.scatter(
+            df, 
+            x=var1, 
+            y=var2, 
+            color=color,
+            color_discrete_sequence=COLOR_MAP,
+            category_orders=cluster_order
+        )
+        fig.update_layout(
+                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='rgba(0,0,0,0)'
+        )
         graphJSON = json.dumps(fig, cls=pltutils.PlotlyJSONEncoder)
     elif graph_type == 'boxplot':
         if pd.api.types.is_numeric_dtype(df[var1]):
@@ -139,7 +171,18 @@ def generate_graph(data, df):
         else:
             numvar = var2
             catvar = var1
-        fig = px.box(df, x=catvar, y=numvar, color=color)
+        fig = px.box(
+            df, 
+            x=catvar, 
+            y=numvar, 
+            color=color,
+            color_discrete_sequence=COLOR_MAP,
+            category_orders=cluster_order
+        )
+        fig.update_layout(
+                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='rgba(0,0,0,0)'
+        )
         graphJSON = json.dumps(fig, cls=pltutils.PlotlyJSONEncoder)
     elif graph_type == 'histogram':
         if pd.api.types.is_numeric_dtype(df[var1]):
@@ -148,7 +191,19 @@ def generate_graph(data, df):
         else:
             numvar = var2
             catvar = var1
-        fig = px.histogram(df, x=catvar, y=numvar, histfunc='avg', color=color)
+        fig = px.histogram(
+            df, 
+            x=catvar, 
+            y=numvar, 
+            histfunc='avg', 
+            color=color,
+            color_discrete_sequence=COLOR_MAP,
+            category_orders=cluster_order
+        )
+        fig.update_layout(
+                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='rgba(0,0,0,0)'
+        )
         graphJSON = json.dumps(fig, cls=pltutils.PlotlyJSONEncoder)
     elif graph_type == 'timeseries-num':
         if pd.api.types.is_datetime64_any_dtype(df[var1]):
@@ -173,7 +228,18 @@ def generate_graph(data, df):
         else:
             aggdf = df.groupby(df[dtvar].dt.strftime('%Y-D%j'))[numvar].mean()
 
-        fig = px.line(aggdf.reset_index(), x=dtvar, y=numvar, color=color)
+        fig = px.line(
+            aggdf.reset_index(), 
+            x=dtvar, 
+            y=numvar, 
+            color=color,
+            color_discrete_sequence=COLOR_MAP,
+            category_orders=cluster_order
+        )
+        fig.update_layout(
+                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='rgba(0,0,0,0)'
+        )
         graphJSON = json.dumps(fig, cls=pltutils.PlotlyJSONEncoder)
     elif graph_type == 'timeseries-cat':
         if pd.api.types.is_datetime64_any_dtype(df[var1]):
@@ -204,7 +270,17 @@ def generate_graph(data, df):
 
         if cluster:
             df[catvar] = df[catvar] + '-' + df['cluster'].astype(str)
-        fig = px.histogram(df, x=dtvar, color=catvar)
+        fig = px.histogram(
+            df, 
+            x=dtvar, 
+            color=catvar,
+            color_discrete_map=COLOR_MAP,
+            category_orders=cluster_order
+        )
+        fig.update_layout(
+                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='rgba(0,0,0,0)'
+        )
         graphJSON = json.dumps(fig, cls=pltutils.PlotlyJSONEncoder)
         
     elif graph_type == 'heatmap':

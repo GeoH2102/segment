@@ -5,3 +5,4 @@ __pycache__/
 Segment/__pycache__/
 Segment/.ipynb_checkpoints/
 models/*
+segment-venv/

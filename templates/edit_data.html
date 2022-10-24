@@ -10,18 +10,27 @@
 
         });
     </script>
-
     <form name="edit_data" method="POST" enctype="multipart/form-data" class="p-0 m-0">
         {{ form.hidden_tag() }}
-        <div class="container-fluid overflow-auto p-0 pb-2 vh-80">
-            {{ form.hidden_tag() }}
-            <div class="container-fluid">
-                {{ html_table | safe }}
+        <div class="container-fluid p-5 d-flex flex-column vh-100">
+            <h2>
+                Edit Data
+            </h2>
+            <p>
+                Ensure that datatypes are correct. The import procedure will tend to import fields
+                only as numbers or text. Categories and Datetime types are also available.<br>
+                Any errors will be coerced to NaN.
+            </p>
+            <div class="box-1 flex-fill overflow-auto p-1">
+                <div class="container-fluid pb-2 pt-2">
+                    {{ html_table | safe }}
+                </div>
+            </div>
+            <div class="box-2 flex-fill mx-1 mt-4 mb-3">
+                <button class="btn btn-primary" type="submit" name="submit" value="btn_change_dtypes">Update</button>
+                <button class="btn btn-primary" type="submit" name="submit" value="btn_edit_to_manipulate">Proceed</button>
             </div>
         </div>
-        <div class="pt-3">
-            <button class="btn btn-primary" type="submit" name="submit" value="btn_change_dtypes">Update</button>
-            <button class="btn btn-primary" type="submit" name="submit" value="btn_edit_to_manipulate">Proceed</button>
-        </div>
     </form>
+
 {% endblock %}

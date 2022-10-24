@@ -1,0 +1,9 @@
+version: "3.8"
+services:
+  segment:
+    image: segment-docker
+    container_name: segment-docker
+    ports:
+      - 5001:5000
+    expose:
+      - 5000
